@@ -46,11 +46,21 @@ public class Controller {
     }
 
     @GetMapping("/xxx")
-    public String getList(@RequestParam String keywords, @RequestParam String radius) throws IOException, InterruptedException {
+    public String getList(@RequestParam String keywords, @RequestParam String radius, @RequestParam String sort) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
+
+        String rad = "";
+
+        if (sort.equals("importance")) {
+            rad = "&radius=" + radius;
+            sort = "";
+        } else {
+            sort = "&sort=" + sort;
+        }
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=51.090731,71.394978" +
-                        "&radius=" + radius + "&keyword=" + keywords + "&key=AIzaSyBC7W-H8jvF7FCFbrEHG-grbUjRKFOcbxk"))
+                        rad + "&keyword=" + keywords + "&key=AIzaSyBC7W-H8jvF7FCFbrEHG-grbUjRKFOcbxk" + sort))
                 .build();
         HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
         return response.body();
